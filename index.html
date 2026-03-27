@@ -9,170 +9,75 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
   :root {
-    --bg: #0d0f14;
-    --surface: #161920;
-    --surface2: #1e2230;
-    --border: #2a2f3f;
-    --text: #e8eaf0;
-    --muted: #6b7280;
-    --accent: #f0c040;
-    --accent2: #4af0a0;
-    --font-display: 'Syne', sans-serif;
-    --font-mono: 'DM Mono', monospace;
+    --bg: #0d0f14; --surface: #161920; --surface2: #1e2230;
+    --border: #2a2f3f; --text: #e8eaf0; --muted: #6b7280;
+    --accent: #f0c040; --accent2: #4af0a0;
+    --font-display: 'Syne', sans-serif; --font-mono: 'DM Mono', monospace;
   }
   * { margin:0; padding:0; box-sizing:border-box; }
   body { background:var(--bg); color:var(--text); font-family:var(--font-mono); height:100vh; display:flex; flex-direction:column; overflow:hidden; }
-
-  /* HEADER */
-  header {
-    display:flex; align-items:center; justify-content:space-between;
-    padding:12px 20px; background:var(--surface); border-bottom:1px solid var(--border);
-    flex-shrink:0; gap:12px; flex-wrap:wrap;
-  }
+  header { display:flex; align-items:center; justify-content:space-between; padding:12px 20px; background:var(--surface); border-bottom:1px solid var(--border); flex-shrink:0; gap:12px; flex-wrap:wrap; }
   .brand { display:flex; align-items:center; gap:10px; }
   .brand-dot { width:10px; height:10px; border-radius:50%; background:var(--accent); box-shadow:0 0 8px var(--accent); animation:pulse 2s infinite; }
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
   .brand h1 { font-family:var(--font-display); font-size:16px; font-weight:800; letter-spacing:.05em; color:var(--text); }
   .brand span { color:var(--accent); }
-
   .controls { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
-  .input-wrap { display:flex; align-items:center; gap:0; }
-  .input-wrap input {
-    background:var(--surface2); border:1px solid var(--border); border-right:none;
-    color:var(--text); font-family:var(--font-mono); font-size:11px;
-    padding:7px 12px; border-radius:6px 0 0 6px; width:300px; outline:none;
-    transition:border-color .2s;
-  }
+  .input-wrap { display:flex; align-items:center; }
+  .input-wrap input { background:var(--surface2); border:1px solid var(--border); border-right:none; color:var(--text); font-family:var(--font-mono); font-size:11px; padding:7px 12px; border-radius:6px 0 0 6px; width:300px; outline:none; transition:border-color .2s; }
   .input-wrap input:focus { border-color:var(--accent); }
   .input-wrap input::placeholder { color:var(--muted); }
-  button {
-    font-family:var(--font-mono); font-size:11px; cursor:pointer;
-    border:1px solid var(--border); border-radius:6px;
-    padding:7px 14px; transition:all .2s;
-  }
-  .btn-primary {
-    background:var(--accent); color:#0d0f14; font-weight:500; border-color:var(--accent);
-    border-radius:0 6px 6px 0; border-left:none;
-  }
+  button { font-family:var(--font-mono); font-size:11px; cursor:pointer; border:1px solid var(--border); border-radius:6px; padding:7px 14px; transition:all .2s; }
+  .btn-primary { background:var(--accent); color:#0d0f14; font-weight:500; border-color:var(--accent); border-radius:0 6px 6px 0; border-left:none; }
   .btn-primary:hover { background:#ffd060; }
   .btn-secondary { background:var(--surface2); color:var(--muted); }
   .btn-secondary:hover { color:var(--text); border-color:var(--accent2); }
-
-  #status-pill {
-    font-size:10px; padding:4px 10px; border-radius:20px; border:1px solid;
-    white-space:nowrap;
-  }
+  #status-pill { font-size:10px; padding:4px 10px; border-radius:20px; border:1px solid; white-space:nowrap; }
   .status-idle { border-color:var(--border); color:var(--muted); background:transparent; }
   .status-loading { border-color:var(--accent); color:var(--accent); background:rgba(240,192,64,.1); }
   .status-ok { border-color:var(--accent2); color:var(--accent2); background:rgba(74,240,160,.1); }
   .status-err { border-color:#f06060; color:#f06060; background:rgba(240,96,96,.1); }
-
-  /* MAIN */
   main { display:flex; flex:1; overflow:hidden; }
-
-  /* SIDEBAR */
-  #sidebar {
-    width:240px; flex-shrink:0; background:var(--surface);
-    border-right:1px solid var(--border); display:flex; flex-direction:column;
-    overflow:hidden;
-  }
-  .sidebar-head {
-    padding:12px 16px; border-bottom:1px solid var(--border);
-    font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:.1em;
-    display:flex; justify-content:space-between; align-items:center;
-  }
+  #sidebar { width:240px; flex-shrink:0; background:var(--surface); border-right:1px solid var(--border); display:flex; flex-direction:column; overflow:hidden; }
+  .sidebar-head { padding:12px 16px; border-bottom:1px solid var(--border); font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:.1em; display:flex; justify-content:space-between; align-items:center; }
   #cluster-count { color:var(--accent); font-weight:500; }
   #legend { flex:1; overflow-y:auto; padding:8px 0; }
   #legend::-webkit-scrollbar { width:3px; }
-  #legend::-webkit-scrollbar-track { background:transparent; }
   #legend::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
-
-  .legend-item {
-    display:flex; align-items:center; gap:10px; padding:7px 16px;
-    cursor:pointer; transition:background .15s; border-left:3px solid transparent;
-  }
+  .legend-item { display:flex; align-items:center; gap:10px; padding:7px 16px; cursor:pointer; transition:background .15s; border-left:3px solid transparent; }
   .legend-item:hover { background:var(--surface2); }
   .legend-item.active { background:var(--surface2); border-left-color:var(--accent); }
   .legend-swatch { width:14px; height:14px; border-radius:3px; flex-shrink:0; border:1px solid rgba(255,255,255,.15); }
   .legend-label { font-size:11px; color:var(--text); flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .legend-count { font-size:10px; color:var(--muted); background:var(--surface); padding:1px 6px; border-radius:10px; }
-
-  .sidebar-footer {
-    padding:10px 16px; border-top:1px solid var(--border);
-    font-size:10px; color:var(--muted); line-height:1.6;
-  }
+  .sidebar-footer { padding:10px 16px; border-top:1px solid var(--border); font-size:10px; color:var(--muted); line-height:1.6; }
   #total-cp { color:var(--accent2); font-weight:500; }
-
-  /* MAP */
   #map { flex:1; position:relative; }
   #map-canvas { width:100%; height:100%; }
-
-  /* MAP OVERLAY */
-  #map-overlay {
-    position:absolute; inset:0; background:var(--bg);
-    display:flex; flex-direction:column; align-items:center; justify-content:center;
-    gap:16px; z-index:1000; transition:opacity .4s;
-  }
+  #map-overlay { position:absolute; inset:0; background:var(--bg); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; z-index:1000; transition:opacity .4s; }
   #map-overlay.hidden { opacity:0; pointer-events:none; }
   .overlay-icon { font-size:48px; }
   .overlay-title { font-family:var(--font-display); font-size:18px; font-weight:700; color:var(--text); }
   .overlay-sub { font-size:12px; color:var(--muted); text-align:center; max-width:320px; line-height:1.7; }
-  .overlay-steps {
-    background:var(--surface); border:1px solid var(--border); border-radius:8px;
-    padding:16px 20px; font-size:11px; line-height:2; color:var(--muted);
-    max-width:340px;
-  }
+  .overlay-steps { background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:16px 20px; font-size:11px; line-height:2; color:var(--muted); max-width:340px; }
   .overlay-steps strong { color:var(--accent); }
   .step-num { color:var(--accent); margin-right:6px; }
-
-  /* LOADER */
-  #loader {
-    position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
-    display:none; flex-direction:column; align-items:center; gap:12px; z-index:999;
-  }
-  .spinner {
-    width:32px; height:32px; border:2px solid var(--border);
-    border-top-color:var(--accent); border-radius:50%; animation:spin .8s linear infinite;
-  }
+  #loader { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); display:none; flex-direction:column; align-items:center; gap:12px; z-index:999; }
+  .spinner { width:32px; height:32px; border:2px solid var(--border); border-top-color:var(--accent); border-radius:50%; animation:spin .8s linear infinite; }
   @keyframes spin { to { transform:rotate(360deg); } }
   .loader-text { font-size:11px; color:var(--muted); }
-
-  /* TOOLTIP */
-  .cp-tooltip {
-    background:var(--surface) !important; border:1px solid var(--border) !important;
-    border-radius:6px !important; font-family:var(--font-mono) !important;
-    font-size:11px !important; color:var(--text) !important;
-    padding:6px 10px !important; box-shadow:0 4px 20px rgba(0,0,0,.5) !important;
-  }
-
-  /* LEAFLET overrides */
+  .cp-tooltip { background:var(--surface) !important; border:1px solid var(--border) !important; border-radius:6px !important; font-family:var(--font-mono) !important; font-size:11px !important; color:var(--text) !important; padding:6px 10px !important; box-shadow:0 4px 20px rgba(0,0,0,.5) !important; }
   .leaflet-container { background:#0d0f14 !important; }
   .leaflet-control-zoom a { background:var(--surface) !important; color:var(--text) !important; border-color:var(--border) !important; }
   .leaflet-control-zoom a:hover { background:var(--surface2) !important; }
   .leaflet-control-attribution { background:rgba(13,15,20,.8) !important; color:var(--muted) !important; font-family:var(--font-mono) !important; font-size:9px !important; }
-
-  /* ERROR TOAST */
-  #toast {
-    position:fixed; bottom:20px; left:50%; transform:translateX(-50%);
-    background:#f06060; color:#fff; font-family:var(--font-mono); font-size:11px;
-    padding:10px 20px; border-radius:8px; z-index:9999; display:none;
-    max-width:90vw; text-align:center; box-shadow:0 4px 20px rgba(0,0,0,.5);
-  }
-
-  @media (max-width:600px) {
-    #sidebar { width:180px; }
-    .input-wrap input { width:180px; }
-    .brand h1 { font-size:13px; }
-  }
+  #toast { position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:#f06060; color:#fff; font-family:var(--font-mono); font-size:11px; padding:10px 20px; border-radius:8px; z-index:9999; display:none; max-width:90vw; text-align:center; box-shadow:0 4px 20px rgba(0,0,0,.5); }
+  @media (max-width:600px) { #sidebar { width:180px; } .input-wrap input { width:180px; } .brand h1 { font-size:13px; } }
 </style>
 </head>
 <body>
-
 <header>
-  <div class="brand">
-    <div class="brand-dot"></div>
-    <h1>Clusters <span>Puebla</span></h1>
-  </div>
+  <div class="brand"><div class="brand-dot"></div><h1>Clusters <span>Puebla</span></h1></div>
   <div class="controls">
     <div class="input-wrap">
       <input type="text" id="sheet-url" placeholder="Pega aquí el link de tu Google Sheet…"/>
@@ -182,23 +87,12 @@
     <div id="status-pill" class="status-idle">Sin datos</div>
   </div>
 </header>
-
 <main>
   <div id="sidebar">
-    <div class="sidebar-head">
-      Clusters <span id="cluster-count">—</span>
-    </div>
-    <div id="legend">
-      <div style="padding:20px 16px; font-size:11px; color:var(--muted); line-height:1.8;">
-        Carga tu Sheet para ver los clusters aquí.
-      </div>
-    </div>
-    <div class="sidebar-footer">
-      Total CPs: <span id="total-cp">—</span><br>
-      Click en cluster para centrar mapa
-    </div>
+    <div class="sidebar-head">Clusters <span id="cluster-count">—</span></div>
+    <div id="legend"><div style="padding:20px 16px; font-size:11px; color:var(--muted); line-height:1.8;">Carga tu Sheet para ver los clusters aquí.</div></div>
+    <div class="sidebar-footer">Total CPs: <span id="total-cp">—</span><br>Click en cluster para centrar mapa</div>
   </div>
-
   <div id="map">
     <div id="map-canvas"></div>
     <div id="map-overlay">
@@ -213,64 +107,32 @@
         <div><span class="step-num">5.</span> Click en <strong>Cargar</strong> ✓</div>
       </div>
     </div>
-    <div id="loader">
-      <div class="spinner"></div>
-      <div class="loader-text">Cargando polígonos…</div>
-    </div>
+    <div id="loader"><div class="spinner"></div><div class="loader-text">Cargando…</div></div>
   </div>
 </main>
-
 <div id="toast"></div>
-
 <script>
-// ─── PALETA DE COLORES ───────────────────────────────────────────────────────
-const PALETTE = [
-  '#f0c040','#4af0a0','#4a9ff0','#f04a6a','#c04af0',
-  '#f07a20','#20d4d4','#f04ac0','#80f040','#f0f040',
-  '#4040f0','#f09040','#40f080','#f04040','#9040f0',
-];
+const PALETTE = ['#f0c040','#4af0a0','#4a9ff0','#f04a6a','#c04af0','#f07a20','#20d4d4','#f04ac0','#80f040','#f0f040','#4040f0','#f09040','#40f080','#f04040','#9040f0'];
+let map, capasGeoJSON={}, coloresCluster={}, sheetURL='', geojsonPuebla=null;
 
-// ─── ESTADO ──────────────────────────────────────────────────────────────────
-let map, tileLayer;
-let capasGeoJSON = {};     // { clusterName: L.GeoJSON }
-let coloresCluster = {};
-let sheetURL = '';
-let geojsonPuebla = null;  // cache del geojson de CPs
-
-// ─── INIT MAP ────────────────────────────────────────────────────────────────
 function initMap() {
-  map = L.map('map-canvas', { zoomControl:true, attributionControl:true })
-          .setView([19.04, -98.2], 9);
-
-  // Mapa oscuro (CartoDB Dark Matter)
-  tileLayer = L.tileLayer(
-    'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
-    { attribution:'© OpenStreetMap © CARTO', subdomains:'abcd', maxZoom:18 }
-  ).addTo(map);
+  map = L.map('map-canvas',{zoomControl:true}).setView([19.04,-98.2],9);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{attribution:'© OpenStreetMap © CARTO',subdomains:'abcd',maxZoom:18}).addTo(map);
 }
 
-// ─── CARGAR SHEET ────────────────────────────────────────────────────────────
 async function cargarSheet() {
   const input = document.getElementById('sheet-url').value.trim();
   if (!input) { toast('Pega el link de tu Google Sheet primero'); return; }
-
-  // Aceptar tanto URL de Sheet normal como URL de CSV publicado
   sheetURL = normalizarURL(input);
   if (!sheetURL) { toast('URL no válida. Usa el link de "Publicar en la web" como CSV'); return; }
-
   localStorage.setItem('sheetURL', input);
   await cargarDatos();
 }
 
 function normalizarURL(url) {
-  // Si ya es URL de CSV publicado
   if (url.includes('pub?') && url.includes('output=csv')) return url;
-  // Si es URL normal de Sheets, intentar convertir
   const match = url.match(/\/spreadsheets\/d\/([a-zA-Z0-9_-]+)/);
-  if (match) {
-    return `https://docs.google.com/spreadsheets/d/${match[1]}/pub?output=csv`;
-  }
-  // Si es URL directa de CSV (Drive, etc.)
+  if (match) return `https://docs.google.com/spreadsheets/d/${match[1]}/pub?output=csv`;
   if (url.startsWith('http')) return url;
   return null;
 }
@@ -281,332 +143,119 @@ async function recargar() {
 }
 
 async function cargarDatos() {
-  setStatus('loading', 'Cargando…');
-  showLoader(true);
-
+  setStatus('loading','Cargando…'); showLoader(true);
   try {
-    // 1. Cargar CSV del Sheet
     const csvData = await fetchCSV(sheetURL);
     const rows = parsearCSV(csvData);
-
-    if (rows.length === 0) {
-      throw new Error('El Sheet está vacío o no tiene datos en columnas A y B');
-    }
-
-    // 2. Agrupar CPs por Cluster
+    if (rows.length===0) throw new Error('El Sheet está vacío o no tiene datos en columnas A y B');
     const clusters = agruparClusters(rows);
-    if (Object.keys(clusters).length === 0) {
-      throw new Error('No se encontraron datos válidos. Verifica que la Columna A sea Cluster y la B sea CP');
-    }
-
-    // 3. Cargar GeoJSON de CPs de Puebla (solo primera vez)
+    if (Object.keys(clusters).length===0) throw new Error('No se encontraron datos válidos');
     setLoaderText('Cargando polígonos de Puebla…');
-    if (!geojsonPuebla) {
-      geojsonPuebla = await cargarGeojsonPuebla();
-    }
-
-    // 4. Pintar mapa
+    if (!geojsonPuebla) geojsonPuebla = await cargarGeojsonPuebla();
     setLoaderText('Pintando clusters…');
     pintarMapa(clusters, geojsonPuebla);
-
-    // 5. Actualizar UI
     actualizarLeyenda(clusters);
-    setStatus('ok', `${Object.keys(clusters).length} clusters cargados`);
+    setStatus('ok', Object.keys(clusters).length+' clusters cargados');
     document.getElementById('map-overlay').classList.add('hidden');
-
-  } catch (err) {
-    setStatus('err', 'Error');
-    toast('❌ ' + err.message);
-    console.error(err);
-  } finally {
-    showLoader(false);
-  }
+  } catch(err) {
+    setStatus('err','Error'); toast('❌ '+err.message); console.error(err);
+  } finally { showLoader(false); }
 }
 
-// ─── FETCH CSV ───────────────────────────────────────────────────────────────
 async function fetchCSV(url) {
-  const timeout = ms => new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), ms));
-
-  async function tryFetch(fetchPromise) {
-    const res = await Promise.race([fetchPromise, timeout(10000)]);
-    if (!res.ok) throw new Error('HTTP ' + res.status);
+  const timeout = ms => new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),ms));
+  async function tryFetch(p) {
+    const res = await Promise.race([p, timeout(10000)]);
+    if (!res.ok) throw new Error('HTTP '+res.status);
     const text = await res.text();
-    if (!text || text.trim().length < 10) throw new Error('empty');
-    // allorigins devuelve JSON envuelto
-    if (text.trim().startsWith('{') && text.includes('"contents"')) {
-      const json = JSON.parse(text);
-      if (!json.contents || json.contents.length < 10) throw new Error('empty contents');
-      return json.contents;
+    if (!text||text.trim().length<10) throw new Error('empty');
+    if (text.trim().startsWith('{')&&text.includes('"contents"')) {
+      const j=JSON.parse(text); if(!j.contents||j.contents.length<10) throw new Error('empty'); return j.contents;
     }
     return text;
   }
-
-  // 1. Fetch directo — funciona desde browser para Sheets publicados
   try { return await tryFetch(fetch(url)); } catch(e) {}
-
-  // 2. corsproxy.io
-  try { return await tryFetch(fetch('https://corsproxy.io/?' + encodeURIComponent(url))); } catch(e) {}
-
-  // 3. allorigins
-  try { return await tryFetch(fetch('https://api.allorigins.win/get?url=' + encodeURIComponent(url))); } catch(e) {}
-
-  // 4. codetabs
-  try { return await tryFetch(fetch('https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(url))); } catch(e) {}
-
+  try { return await tryFetch(fetch('https://corsproxy.io/?'+encodeURIComponent(url))); } catch(e) {}
+  try { return await tryFetch(fetch('https://api.allorigins.win/get?url='+encodeURIComponent(url))); } catch(e) {}
   throw new Error('No se pudo leer el Sheet. Verifica que el link sea el de "Publicar en la web" como CSV.');
 }
 
 function parsearCSV(csv) {
-  const lineas = csv.trim().split('\n');
-  const rows = [];
-  // Saltar encabezado (fila 1)
-  for (let i = 1; i < lineas.length; i++) {
-    const cols = lineas[i].split(',');
-    const cluster = (cols[0] || '').replace(/"/g,'').trim();
-    let cp = (cols[1] || '').replace(/"/g,'').trim().replace(/\.0$/, '');
-    cp = cp.padStart(5, '0');
-    if (cluster && cp && cp !== '00000') {
-      rows.push({ cluster, cp });
-    }
+  const lineas=csv.trim().split('\n'), rows=[];
+  for (let i=1;i<lineas.length;i++) {
+    const cols=lineas[i].split(',');
+    const cluster=(cols[0]||'').replace(/"/g,'').trim();
+    let cp=(cols[1]||'').replace(/"/g,'').trim().replace(/\.0$/,'').padStart(5,'0');
+    if (cluster&&cp&&cp!=='00000') rows.push({cluster,cp});
   }
   return rows;
 }
 
 function agruparClusters(rows) {
-  const map = {};
-  rows.forEach(({ cluster, cp }) => {
-    if (!map[cluster]) map[cluster] = new Set();
-    map[cluster].add(cp);
-  });
-  // Convertir Sets a Arrays
-  const result = {};
-  Object.keys(map).forEach(k => result[k] = [...map[k]]);
-  return result;
+  const m={};
+  rows.forEach(({cluster,cp})=>{ if(!m[cluster]) m[cluster]=new Set(); m[cluster].add(cp); });
+  const r={}; Object.keys(m).forEach(k=>r[k]=[...m[k]]); return r;
 }
 
-// ─── GEOJSON PUEBLA ──────────────────────────────────────────────────────────
-// Usamos el dataset público de códigos postales de México de OpenDataSoft / INEGI
-// filtrado por estado de Puebla
 async function cargarGeojsonPuebla() {
-  // Dataset público de CPs México en formato GeoJSON (Puebla = estado 21)
-  // Fuente: datos.gob.mx / INEGI vía GeoHub
-  const url = 'https://raw.githubusercontent.com/angelnmara/geojson/master/CPMexico.geojson';
-  const proxy = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
-
-  try {
-    const res = await fetch(proxy);
-    if (!res.ok) throw new Error('No se pudo cargar el GeoJSON');
-    const json = await res.json();
-    const geojson = JSON.parse(json.contents);
-
-    // Filtrar solo Puebla (d_estado = "Puebla" o c_estado = "21")
-    const puebla = {
-      type: 'FeatureCollection',
-      features: geojson.features.filter(f => {
-        const p = f.properties;
-        return (p.d_estado === 'Puebla' || p.c_estado === '21' || p.ESTADO === 'PUEBLA');
-      })
-    };
-
-    if (puebla.features.length === 0) {
-      // Si el filtro no funciona, usar todos (fallback)
-      return geojson;
-    }
-    return puebla;
-
-  } catch(e) {
-    // Fallback: intentar con otro endpoint
-    const url2 = 'https://raw.githubusercontent.com/gabrielsr/mexico-geojson/master/states/puebla.geojson';
-    const proxy2 = `https://api.allorigins.win/get?url=${encodeURIComponent(url2)}`;
-    const res2 = await fetch(proxy2);
-    if (!res2.ok) throw new Error('No se pudieron cargar los polígonos de Puebla. Verifica tu conexión a internet.');
-    const json2 = await res2.json();
-    return JSON.parse(json2.contents);
-  }
+  const res = await fetch('puebla.geojson');
+  if (!res.ok) throw new Error('No se pudo cargar puebla.geojson ('+res.status+')');
+  const geojson = await res.json();
+  if (!geojson.features||geojson.features.length===0) throw new Error('puebla.geojson está vacío');
+  return geojson;
 }
 
-// ─── PINTAR MAPA ─────────────────────────────────────────────────────────────
 function pintarMapa(clusters, geojson) {
-  // Limpiar capas anteriores
-  Object.values(capasGeoJSON).forEach(c => map.removeLayer(c));
-  capasGeoJSON = {};
-
-  const nombresCluster = Object.keys(clusters);
-
-  // Asignar colores
-  nombresCluster.forEach((nombre, i) => {
-    coloresCluster[nombre] = PALETTE[i % PALETTE.length];
-  });
-
-  // Capa base: todos los polígonos en gris
-  const cpEnUso = new Set(nombresCluster.flatMap(n => clusters[n]));
-
-  // Construir índice CP → cluster
-  const cpACluster = {};
-  nombresCluster.forEach(nombre => {
-    clusters[nombre].forEach(cp => { cpACluster[cp] = nombre; });
-  });
-
-  // Función para obtener CP del feature (múltiples nombres de campo posibles)
-  function getCPdeFeature(props) {
-    return String(
-      props.d_cp || props.CP || props.cp || props.POSTALCODE || props.postal_code || ''
-    ).trim().padStart(5, '0');
-  }
-
-  // Dibujar polígonos
-  const capa = L.geoJSON(geojson, {
-    style: feature => {
-      const cp = getCPdeFeature(feature.properties);
-      const cluster = cpACluster[cp];
-      if (cluster) {
-        return {
-          fillColor: coloresCluster[cluster],
-          fillOpacity: 0.65,
-          color: '#0d0f14',
-          weight: 0.8,
-          opacity: 1
-        };
-      }
-      // CP no asignado a ningún cluster
-      return {
-        fillColor: '#2a2f3f',
-        fillOpacity: 0.3,
-        color: '#3a3f4f',
-        weight: 0.5,
-        opacity: 0.5
-      };
-    },
-    onEachFeature: (feature, layer) => {
-      const props = feature.properties;
-      const cp = getCPdeFeature(props);
-      const cluster = cpACluster[cp] || '—';
-      const colonia = props.d_asenta || props.COLONIA || props.neighborhood || '';
-      const municipio = props.D_mncp || props.MUNICIPIO || props.municipality || '';
-
-      layer.bindTooltip(
-        `<b>CP ${cp}</b><br>` +
-        (colonia ? `${colonia}<br>` : '') +
-        (municipio ? `${municipio}<br>` : '') +
-        `Cluster: <b style="color:${coloresCluster[cluster] || '#aaa'}">${cluster}</b>`,
-        { className:'cp-tooltip', sticky:true }
-      );
-
-      layer.on('mouseover', function() {
-        if (cpACluster[cp]) {
-          this.setStyle({ fillOpacity:0.9, weight:1.5 });
-        }
-      });
-      layer.on('mouseout', function() {
-        capa.resetStyle(this);
-      });
+  Object.values(capasGeoJSON).forEach(c=>map.removeLayer(c)); capasGeoJSON={};
+  const nombres=Object.keys(clusters);
+  nombres.forEach((n,i)=>{ coloresCluster[n]=PALETTE[i%PALETTE.length]; });
+  const cpACluster={};
+  nombres.forEach(n=>{ clusters[n].forEach(cp=>{ cpACluster[cp]=n; }); });
+  function getCP(props) { return String(props.d_cp||props.CP||props.cp||props.POSTALCODE||props.postal_code||'').trim().padStart(5,'0'); }
+  const capa=L.geoJSON(geojson,{
+    style: f=>{ const cp=getCP(f.properties),cl=cpACluster[cp];
+      return cl ? {fillColor:coloresCluster[cl],fillOpacity:0.65,color:'#0d0f14',weight:0.8,opacity:1}
+                : {fillColor:'#2a2f3f',fillOpacity:0.3,color:'#3a3f4f',weight:0.5,opacity:0.5}; },
+    onEachFeature:(f,layer)=>{
+      const props=f.properties, cp=getCP(props), cl=cpACluster[cp]||'—';
+      const col=props.d_asenta||props.COLONIA||'', mun=props.D_mncp||props.MUNICIPIO||'';
+      layer.bindTooltip(`<b>CP ${cp}</b><br>${col?col+'<br>':''}${mun?mun+'<br>':''}Cluster: <b style="color:${coloresCluster[cl]||'#aaa'}">${cl}</b>`,{className:'cp-tooltip',sticky:true});
+      layer.on('mouseover',function(){if(cpACluster[cp])this.setStyle({fillOpacity:0.9,weight:1.5});});
+      layer.on('mouseout',function(){capa.resetStyle(this);});
     }
   }).addTo(map);
-
-  capasGeoJSON['__all__'] = capa;
-
-  // Guardar referencia de bounds por cluster
-  nombresCluster.forEach(nombre => {
-    const cpsDel = new Set(clusters[nombre]);
-    const features = geojson.features.filter(f => {
-      const cp = getCPdeFeature(f.properties);
-      return cpsDel.has(cp);
-    });
-    if (features.length > 0) {
-      const mini = L.geoJSON({ type:'FeatureCollection', features });
-      capasGeoJSON[nombre] = mini;
-    }
+  capasGeoJSON['__all__']=capa;
+  nombres.forEach(n=>{
+    const feats=geojson.features.filter(f=>new Set(clusters[n]).has(getCP(f.properties)));
+    if(feats.length>0) capasGeoJSON[n]=L.geoJSON({type:'FeatureCollection',features:feats});
   });
-
-  // Centrar en Puebla
-  try {
-    const bounds = capa.getBounds();
-    if (bounds.isValid()) map.fitBounds(bounds, { padding:[20,20] });
-  } catch(e) {
-    map.setView([19.04, -98.2], 9);
-  }
+  try { const b=capa.getBounds(); if(b.isValid()) map.fitBounds(b,{padding:[20,20]}); } catch(e){map.setView([19.04,-98.2],9);}
 }
 
-// ─── LEYENDA ─────────────────────────────────────────────────────────────────
 function actualizarLeyenda(clusters) {
-  const legend = document.getElementById('legend');
-  const nombres = Object.keys(clusters);
-  legend.innerHTML = '';
-
-  let totalCPs = 0;
-  nombres.forEach(nombre => {
-    const n = clusters[nombre].length;
-    totalCPs += n;
-    const color = coloresCluster[nombre];
-
-    const item = document.createElement('div');
-    item.className = 'legend-item';
-    item.innerHTML = `
-      <div class="legend-swatch" style="background:${color}"></div>
-      <div class="legend-label" title="${nombre}">${nombre}</div>
-      <div class="legend-count">${n}</div>
-    `;
-    item.onclick = () => centrarEnCluster(nombre, item);
+  const legend=document.getElementById('legend'), nombres=Object.keys(clusters);
+  legend.innerHTML=''; let total=0;
+  nombres.forEach(n=>{ const cnt=clusters[n].length; total+=cnt;
+    const item=document.createElement('div'); item.className='legend-item';
+    item.innerHTML=`<div class="legend-swatch" style="background:${coloresCluster[n]}"></div><div class="legend-label" title="${n}">${n}</div><div class="legend-count">${cnt}</div>`;
+    item.onclick=()=>{ document.querySelectorAll('.legend-item').forEach(i=>i.classList.remove('active')); item.classList.add('active');
+      const c=capasGeoJSON[n]; if(c){try{const b=c.getBounds();if(b.isValid())map.fitBounds(b,{padding:[40,40]});}catch(e){}} };
     legend.appendChild(item);
   });
-
-  document.getElementById('cluster-count').textContent = nombres.length;
-  document.getElementById('total-cp').textContent = totalCPs;
+  document.getElementById('cluster-count').textContent=nombres.length;
+  document.getElementById('total-cp').textContent=total;
 }
 
-function centrarEnCluster(nombre, itemEl) {
-  document.querySelectorAll('.legend-item').forEach(i => i.classList.remove('active'));
-  itemEl.classList.add('active');
+function setStatus(type,text){const el=document.getElementById('status-pill');el.className='status-'+type;el.textContent=text;}
+function showLoader(show){document.getElementById('loader').style.display=show?'flex':'none';}
+function setLoaderText(text){document.querySelector('.loader-text').textContent=text;}
+function toast(msg){const el=document.getElementById('toast');el.innerHTML=msg.replace(/\n/g,'<br>');el.style.display='block';clearTimeout(window._t);window._t=setTimeout(()=>{el.style.display='none';},8000);}
 
-  const capa = capasGeoJSON[nombre];
-  if (capa) {
-    try {
-      const bounds = capa.getBounds();
-      if (bounds.isValid()) map.fitBounds(bounds, { padding:[40,40] });
-    } catch(e) {}
-  }
-}
-
-// ─── HELPERS UI ──────────────────────────────────────────────────────────────
-function setStatus(type, text) {
-  const el = document.getElementById('status-pill');
-  el.className = 'status-' + type;
-  el.textContent = text;
-  // @ts-ignore
-  el.style.display = '';
-}
-
-function showLoader(show) {
-  document.getElementById('loader').style.display = show ? 'flex' : 'none';
-}
-
-function setLoaderText(text) {
-  document.querySelector('.loader-text').textContent = text;
-}
-
-function toast(msg) {
-  const el = document.getElementById('toast');
-  el.innerHTML = msg.replace(/\n/g, '<br>');
-  el.style.display = 'block';
-  clearTimeout(window._toastTimer);
-  window._toastTimer = setTimeout(() => { el.style.display = 'none'; }, 8000);
-}
-
-// ─── AUTO-RELOAD ─────────────────────────────────────────────────────────────
-// Recargar datos cada 5 minutos si hay un sheet cargado
-setInterval(() => {
-  if (sheetURL) cargarDatos();
-}, 5 * 60 * 1000);
-
-// ─── RESTORE URL ─────────────────────────────────────────────────────────────
-window.addEventListener('load', () => {
+setInterval(()=>{ if(sheetURL) cargarDatos(); }, 5*60*1000);
+window.addEventListener('load',()=>{
   initMap();
-  const saved = localStorage.getItem('sheetURL');
-  if (saved) {
-    document.getElementById('sheet-url').value = saved;
-    sheetURL = normalizarURL(saved);
-    if (sheetURL) cargarDatos();
-  }
+  const saved=localStorage.getItem('sheetURL');
+  if(saved){document.getElementById('sheet-url').value=saved;sheetURL=normalizarURL(saved);if(sheetURL)cargarDatos();}
 });
 </script>
 </body>
